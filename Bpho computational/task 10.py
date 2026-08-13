@@ -16,6 +16,7 @@ m_e = 9.1093835611 * 10**-31
 e = 1.602176620898 * 10**-19
 a_0 = (E_0 * h**2)/(m_e * e**2 * np.pi) * 10**10        #in Angstroms
 u = 1.6605402 * 10**-27
+
 M = A*u
 mu = (m_e*M)/(m_e+M)
 a = (m_e*a_0)/(mu*Z)
@@ -55,10 +56,14 @@ def omega(theta,phi,l,m):
         return Y1(theta, phi, m, l) + Y1(theta, phi, -m, l)
 
 def psi(r,theta,phi,n,l,m):
+    global M,mu,a
+    M = A*u
+    mu = (m_e*M)/(m_e+M)
+    a = (m_e*a_0)/(mu*Z)
     return np.multiply(R(r, n, l), omega(theta,phi,l,m))
 
 
-r_array=np.linspace(0, 4, 1000)      #in Angstroms
+r_array=np.linspace(0, 4, 200)      #in Angstroms
 
 plt.plot(r_array, np.power(R(r_array,n=N,l=L),2))
 plt.suptitle(f"Hydrogenic atom: Z={Z}, A={A}, n={N}, L={L}", y=0.95)
@@ -67,29 +72,42 @@ plt.ylabel("Probability density")
 plt.show()
 
 print("Rendering contour maps...")
-theta_array = np.linspace(-np.pi,np.pi,1000)
+theta_array = np.linspace(-np.pi,np.pi,200)
 THETA, R_ARRAY = np.meshgrid(theta_array, r_array)
 
 def plot1(Z,L,m):
-    Z1 = psi(R_ARRAY,THETA,np.pi/2,n=N,l=L,m=0)
+    Z1 = psi(R_ARRAY,THETA,np.pi/2,n=N,l=L,m=m)
     Z1 = Z1 * np.conjugate(Z1)
-    plt.contour(-np.sin(THETA)*R_ARRAY,np.cos(THETA)*R_ARRAY,Z1,1000)
+    z_max = np.max(Z1)
+    ax = plt.gca()
+    ax.set_aspect("equal")
+    plt.scatter(-np.sin(THETA)*R_ARRAY,np.cos(THETA)*R_ARRAY,c=Z1/z_max,cmap="plasma")
+    plt.suptitle(f"Hydrogenic atom: Z={Z}, A={A}, M={m}", y=0.95)
+    plt.xlabel("x /Angstroms")
     plt.show()
 
 def plot2(Z,L,m):
-    Z1 = psi(R_ARRAY,np.pi/2,THETA,n=N,l=L,m=0)
+    Z1 = psi(R_ARRAY,np.pi/2,THETA,n=N,l=L,m=m)
     Z1 = Z1 * np.conjugate(Z1)
-    plt.contour(-np.sin(THETA)*R_ARRAY,np.cos(THETA)*R_ARRAY,Z1,1000)
+    z_max = np.max(Z1)
+    ax = plt.gca()
+    ax.set_aspect("equal")
+    plt.scatter(np.cos(THETA)*R_ARRAY,-np.sin(THETA)*R_ARRAY,c=Z1/z_max,cmap="plasma")
+    plt.suptitle(f"Hydrogenic atom: Z={Z}, A={A}, M={m}", y=0.95)
+    plt.xlabel("x /Angstroms")
     plt.show()
 
-Z,L,m = 1,2,0
+Z,A = 1,1
+
+L,m,N = 2,0,3
+
 plot1(Z,L,m)
 plot2(Z,L,m)
-Z,L,m = 1,3,2
+"""Z,L,m = 1,3,2
 plot1(Z,L,m)
 plot2(Z,L,m)
 
-
+"""
 
 
 
