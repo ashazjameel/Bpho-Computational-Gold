@@ -100,8 +100,11 @@ for element in elements:
     if T_D == "N/A":
         continue
     T_D = float(T_D[:-1])
-    #plt.clf()
+    plt.clf()
     plt.plot(T_array,C(T_D,T_array),c=colour)
+    plt.suptitle("Einstein model of solid molar heat capacity",y=0.95)
+    plt.xlabel("T /K")
+    plt.ylabel("Molar heat capacity /Jmol⁻¹K⁻¹")
     plt.legend([element], loc="lower right")
     plt.pause(0.1)
 
